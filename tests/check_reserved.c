@@ -1,4 +1,4 @@
-#include "check_machine.h"
+#include "check_reserved.h"
 
 START_TEST (hello_world)
 {
@@ -6,9 +6,9 @@ START_TEST (hello_world)
 }
 END_TEST
 
-Suite * machine_suite (void)
+Suite * reserved_suite (void)
 {
-	Suite *s = suite_create ("Machines");
+	Suite *s = suite_create ("Reserved Words");
 
 	/* Core test case */
 //	TCase *tc_core = tcase_create ("Core");

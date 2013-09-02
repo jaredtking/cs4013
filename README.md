@@ -11,6 +11,8 @@ make
 
 ### Testing
 
+Testing is provided with [Check](http://check.sourceforge.net/). Make sure it is installed before running tests.
+
 ```bash
 make check
 ```

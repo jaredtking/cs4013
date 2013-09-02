@@ -1,7 +1,10 @@
 SDIR=src
-IDIR=include
-LDIR=lib
+IDIR=$(SDIR)
 ODIR=obj
+LDIR=lib
+OUTDIR=bin
+TESTSDIR=tests
+OUTNAME=lexer
 
 CC=gcc
 CFLAGS=-Wall -I$(IDIR)
@@ -14,14 +17,23 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 _OBJ = $(patsubst $(SDIR)/%.c,%.o,$(wildcard $(SDIR)/*.c))
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
+TESTS = $(wildcard $(TESTSDIR)/*.c)
+
 $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
-	mkdir -p $(ODIR)
+	@mkdir -p $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-all: $(OBJ)
+$(OUTDIR)/$(OUTNAME): $(OBJ)
+	@mkdir -p $(OUTDIR)
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
-.PHONY: clean
+.PHONY: clean check
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(OUTDIR)/$(OUTNAME) $(OUTDIR)/tests
+
+check: $(TESTS)
+	@mkdir -p $(OUTDIR)
+	@gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check`
+	./$(OUTDIR)/tests
+	@rm -f $(OUTDIR)/tests

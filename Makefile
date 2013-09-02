@@ -16,6 +16,7 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = $(patsubst $(SDIR)/%.c,%.o,$(wildcard $(SDIR)/*.c))
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+OBJ_TEST = $(filter-out obj/lexer.o,$(OBJ))
 
 TESTS = $(wildcard $(TESTSDIR)/*.c)
 
@@ -32,8 +33,8 @@ $(OUTDIR)/$(OUTNAME): $(OBJ)
 clean:
 	rm -f $(ODIR)/*.o *~ core $(IDIR)/*~ $(OUTDIR)/$(OUTNAME) $(OUTDIR)/tests
 
-check: $(TESTS)
+check: $(TESTS) $(OBJ_TEST)
 	@mkdir -p $(OUTDIR)
-	@gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check` -I$(IDIR)
-	./$(OUTDIR)/tests
+	gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check` $(CFLAGS) $(LIBS)
+	@./$(OUTDIR)/tests
 	@rm -f $(OUTDIR)/tests

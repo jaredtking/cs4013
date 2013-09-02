@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #ifndef RESERVE_H
 #define RESERVE_H
@@ -16,6 +17,6 @@ typedef struct ReservedWordList
 	struct ReservedWordList *next;
 } ReservedWordList;
 
-ReservedWordList tokenize (char* lines);
+ReservedWordList tokenize_reserved_words (const char *lines[]);
 
 #endif

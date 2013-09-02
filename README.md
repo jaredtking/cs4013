@@ -31,4 +31,4 @@ make check
 
 ### License
 
-Released under MIT license. Please don't copy this if you are taking this class.
+Released under MIT license.

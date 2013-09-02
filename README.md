@@ -3,10 +3,22 @@ cs4013
 
 Compilers project for CS4013 at the University of Tulsa
 
+### Requirements
+
+- gcc
+
 ### Running
+
+Compile the program with `make`.
 
 ```bash
 make
+```
+
+Output from gcc will be in the `bin` directory.
+
+```bash
+./bin/lexer
 ```
 
 ### Testing

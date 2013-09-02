@@ -5,7 +5,9 @@ Compilers project for CS4013 at the University of Tulsa
 
 ### Requirements
 
+- make
 - gcc
+- [Check](http://check.sourceforge.net/) (only for testing)
 
 ### Running
 

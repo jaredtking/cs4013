@@ -1,5 +1,5 @@
 SDIR=src
-IDIR=$(SDIR)
+IDIR=include
 ODIR=obj
 LDIR=lib
 OUTDIR=bin
@@ -30,10 +30,10 @@ $(OUTDIR)/$(OUTNAME): $(OBJ)
 .PHONY: clean check
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ $(OUTDIR)/$(OUTNAME) $(OUTDIR)/tests
+	rm -f $(ODIR)/*.o *~ core $(IDIR)/*~ $(OUTDIR)/$(OUTNAME) $(OUTDIR)/tests
 
 check: $(TESTS)
 	@mkdir -p $(OUTDIR)
-	@gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check`
+	@gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check` -I$(IDIR)
 	./$(OUTDIR)/tests
 	@rm -f $(OUTDIR)/tests

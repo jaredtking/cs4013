@@ -1,14 +1,28 @@
 #include "reserved.h"
 
-ReservedWordList tokenize_reserved_words (const char *lines[])
+ReservedWord *tokenize_reserved_word_str (char *in)
 {
-	ReservedWordList head;
+	ReservedWord *word = (ReservedWord *)malloc(sizeof(ReservedWord));
 
-    int i;
-    for(i = 0; lines[i] != NULL; i++)
-    {
-        printf("[%d] .. %s\n", (i+1), lines[i]);
-    }
+	char line[200];
+	strcpy(line, in);
 
-	return head;
+    // tokenize the line by tabs
+    char pieces[3][200];
+    char *piece;
+    int i = -1;
+
+	piece = strtok (line, RESERVED_WORD_DELIM);
+	while (piece != NULL && i++ < 3)
+	{
+		strcpy (pieces[i], piece);
+	    piece = strtok (NULL, RESERVED_WORD_DELIM);
+	}
+
+	word->name = malloc(201);
+	strcpy(word->name, pieces[0]);
+	word->type = strtol(pieces[1], (char **)NULL, 10);
+	word->attribute = strtol(pieces[2], (char **)NULL, 10);
+
+	return word;
 }

@@ -1,22 +1,20 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifndef RESERVE_H
 #define RESERVE_H
+
+#define RESERVED_WORD_DELIM "\t"
 
 typedef struct ReservedWord
 {
 	char *name;
 	int type;
 	int attribute;
+	struct ReservedWord *next;
 } ReservedWord;
 
-typedef struct ReservedWordList
-{
-	ReservedWord word;
-	struct ReservedWordList *next;
-} ReservedWordList;
-
-ReservedWordList tokenize_reserved_words (const char *lines[]);
+ReservedWord *tokenize_reserved_word_str (char *line);
 
 #endif

@@ -34,8 +34,9 @@ clean:
 	rm -f $(ODIR)/*.o *~ core $(IDIR)/*~ $(OUTDIR)/$(OUTNAME) $(OUTDIR)/tests
 
 check: $(TESTS) $(OBJ_TEST)
+#	echo `pkg-config --cflags --libs check`
 	@mkdir -p $(OUTDIR)
-	gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check` $(CFLAGS) $(LIBS)
+	gcc -o $(OUTDIR)/tests $^ -D_THREAD_SAFE -lcheck $(CFLAGS) $(LIBS)
 	@./$(OUTDIR)/tests
 	@rm -f $(OUTDIR)/tests
 

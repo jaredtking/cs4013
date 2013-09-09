@@ -38,13 +38,13 @@ MachineResult machine_whitespace(char *in)
 			res.err = MACHINE_ERR_NO_MATCH;
 		break;
 		case 1:
-			if (*f == '\n' || *f == '\r' || *f == '\t' || *f == ' ')
+			if (is_whitespace(*f))
 				s++;
 			else
 				s--;
 		break;
 		case 2:
-			if (!(*f == '\n' || *f == '\r' || *f == '\t' || *f == ' '))
+			if (is_whitespace(*f))
 				s++;
 		break;
 		case 3:
@@ -61,27 +61,118 @@ MachineResult machine_whitespace(char *in)
 	return res;
 }
 
-void machine_idres()
+MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 {
+	char *f = in;
+	int s = 1;
+	MachineResult res;
+	res.token = NULL;
+	res.err = MACHINE_ERR_NONE;
 
+	while (res.token == NULL && res.err == MACHINE_ERR_NONE)
+	{
+		switch (s)
+		{
+		case 0:
+			f--;
+			res.f = f;
+			res.err = MACHINE_ERR_NO_MATCH;
+		break;
+		case 1:
+			if (is_alpha(*f))
+				s++;
+			else
+				s--;
+		break;
+		case 2:
+			if (!is_alpha_numeric(*f))
+				s++;
+		break;
+		case 3:
+			// check if reserved word
+			// TODO
+
+			// check if too long
+			// TODO
+
+			res.f = f;
+			res.token = (Token *)malloc(sizeof(Token));
+			res.token->type = TOKEN_ID;
+			res.token->attribute = TOKEN_NO_ATTRIBUTE;
+		break;
+		}
+
+		f++;
+	}
+
+	return res;		
 }
 
-void machine_catchall()
+MachineResult machine_catchall(char *in)
 {
+	char *f = in;
+	int s = 1;
+	MachineResult res;
+	res.token = NULL;
+	res.err = MACHINE_ERR_NONE;
 
+	// TODO
+
+	return res;
 }
 
-void machine_int()
+MachineResult machine_int(char *in)
 {
+	char *f = in;
+	int s = 1;
+	MachineResult res;
+	res.token = NULL;
+	res.err = MACHINE_ERR_NONE;
 
+	// TODO
+
+	return res;
 }
 
-void machine_real()
+MachineResult machine_real(char *in)
 {
+	char *f = in;
+	int s = 1;
+	MachineResult res;
+	res.token = NULL;
+	res.err = MACHINE_ERR_NONE;
 
+	// TODO
+
+	return res;
 }
 
-void machine_longreal()
+MachineResult machine_longreal(char *in)
 {
+	char *f = in;
+	int s = 1;
+	MachineResult res;
+	res.token = NULL;
+	res.err = MACHINE_ERR_NONE;
 
+	// TODO
+
+	return res;
+}
+
+/* Useful checks */
+
+int is_alpha(char c)
+{
+	return (c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' );
+}
+
+int is_alpha_numeric(char c)
+{
+	return is_alpha(c) || ( c >= '0' && c <= '9' );
+}
+
+int is_whitespace(char c)
+{
+	return c == '\n' || c == '\r' || c == '\t' || c == ' ';
 }

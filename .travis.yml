@@ -8,4 +8,6 @@ before_install:
 - cd check-0.9.10/
 - ./configure --prefix=$TRAVIS_BUILD_DIR
 - make && make install
+- ls $TRAVIS_BUILD_DIR/include
+- ls $TRAVIS_BUILD_DIR/lib
 - cd ..

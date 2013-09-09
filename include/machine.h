@@ -14,6 +14,9 @@ typedef struct MachineResult
 	int err;
 } MachineResult;
 
+#define MACHINE_ERR_NONE 0
+#define MACHINE_ERR_NO_MATCH 1
+
 MachineResult machine_whitespace(char *in);
 
 #endif

@@ -11,15 +11,16 @@ MachineResult machine_whitespace(char *in)
 	int s = 1;
 	MachineResult res;
 	res.token = NULL;
-	res.err = 0;
+	res.err = MACHINE_ERR_NONE;
 
-	while (res.token == NULL && res.err == 0)
+	while (res.token == NULL && res.err == MACHINE_ERR_NONE)
 	{
 		switch (s)
 		{
 		case 0:
 			f--;
 			res.f = f;
+			res.err = MACHINE_ERR_NO_MATCH;
 		break;
 		case 1:
 			if (*f == '\n' || *f == '\r' || *f == '\t' || *f == ' ')

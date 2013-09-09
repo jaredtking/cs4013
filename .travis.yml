@@ -1,6 +1,6 @@
 language: c
 
-env: PKG_CONFIG_PATH=$HOME/check-0.9.10/
+env: PKG_CONFIG_PATH=$HOME/check-0.9.10
 
 before_install:
 - wget http://downloads.sourceforge.net/project/check/check/0.9.10/check-0.9.10.tar.gz
@@ -9,4 +9,5 @@ before_install:
 - ./configure --prefix=$HOME
 - make && make install
 - ls
+- echo PKG_CONFIG_PATH
 - cd ..

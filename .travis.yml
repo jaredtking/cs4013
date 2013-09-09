@@ -1,1 +1,8 @@
 language: c
+
+before_install:
+- wget http://downloads.sourceforge.net/project/check/check/0.9.10/check-0.9.10.tar.gz
+- tar -xzf check-0.9.10.tar.gz
+- cd check-0.9.10/
+- ./configure
+- make && make install

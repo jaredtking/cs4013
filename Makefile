@@ -35,6 +35,7 @@ clean:
 
 check: $(TESTS) $(OBJ_TEST)
 	@mkdir -p $(OUTDIR)
+	echo `pkg-config --cflags --libs check`
 	gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check` $(CFLAGS) $(LIBS)
 	@./$(OUTDIR)/tests
 	@rm -f $(OUTDIR)/tests

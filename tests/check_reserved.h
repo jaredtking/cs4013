@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <check.h>
 #include <string.h>
-#include "reserved.h"
+#include "token.h"
 
 #ifndef CHECK_RESERVED_H
 #define CHECK_RESERVED_H

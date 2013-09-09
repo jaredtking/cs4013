@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "reserved.h"
+
 #include "token.h"
 #include <stdio.h>
 
@@ -34,6 +34,9 @@ typedef struct MachineResult
 MachineResult machine_omega(char *in);
 MachineResult machine_whitespace(char *in);
 MachineResult machine_idres(char *in, ReservedWord *reserved_words);
+MachineResult machine_int(char *in);
+MachineResult machine_real(char *in);
+MachineResult machine_longreal(char *in);
 
 int is_alpha(char c);
 int is_alpha_numeric(char c);

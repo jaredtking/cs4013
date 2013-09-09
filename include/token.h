@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include "reserved.h"
 
 #ifndef TOKEN_H
 #define TOKEN_H
@@ -29,9 +28,13 @@ typedef enum TokenType
 	TOKEN_DIV,
 	TOKEN_MOD,
 	TOKEN_AND,
+	TOKEN_NUM,
+	ERR_TOKEN_NOT_FOUND,
 	TOKEN_LEXERR,
-	TOKEN_NO_ATTRIBUTE,
-	ERR_TOKEN_NOT_FOUND
+	TOKEN_ATTRIBUTE_INT,
+	TOKEN_ATTRIBUTE_REAL,
+	TOKEN_ATTRIBUTE_LONGREAL,
+	TOKEN_NO_ATTRIBUTE
 } TokenType;
 
 typedef struct Token
@@ -40,6 +43,17 @@ typedef struct Token
 	TokenType attribute;
 } Token;
 
+#define RESERVED_WORD_DELIM "\t"
+
+typedef struct ReservedWord
+{
+	char *name;
+	int type;
+	int attribute;
+	struct ReservedWord *next;
+} ReservedWord;
+
 Token *get_next_token(char *line, ReservedWord *reserved_words);
+ReservedWord *tokenize_reserved_word_str (char *line);
 
 #endif

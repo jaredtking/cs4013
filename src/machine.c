@@ -109,15 +109,13 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 			{
 				// make sure id is not too long
 				if (strlen(word) > MAX_ID_LEN)
-				{
 					res.err = MACHINE_ERR_ID_TOO_LONG;
-				}
 				else
 				{
 					res.token = (Token *)malloc(sizeof(Token));
 					res.token->type = TOKEN_ID;
 					res.token->attribute = TOKEN_NO_ATTRIBUTE;
-				}				
+				}
 			}
 		break;
 		}
@@ -143,39 +141,208 @@ MachineResult machine_catchall(char *in)
 
 MachineResult machine_int(char *in)
 {
-	//char *f = in;
-	//int s = 1;
+	char *f = in;
+	int s = 1;
 	MachineResult res;
 	res.token = NULL;
 	res.err = MACHINE_ERR_NONE;
 
-	// TODO
+	while (res.token == NULL && res.err == MACHINE_ERR_NONE)
+	{
+		switch (s)
+		{
+		case 0:
+			f--;
+			res.f = f;
+			res.err = MACHINE_ERR_NO_MATCH;
+		break;
+		case 1:
+			if (is_numeric(*f))
+				s++;
+			else
+				s--;
+		break;
+		case 2:
+			if (!is_numeric(*f))
+				s++;
+		break;
+		case 3:
+			f--;
+
+			// make sure int is not too long
+			if (f - in > MAX_INT_LEN)
+				res.err = MACHINE_ERR_INT_TOO_LONG;
+			else
+			{
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_NUM;
+				res.token->attribute = TOKEN_ATTRIBUTE_INT;
+			}
+		break;
+		}
+
+		f++;
+	}
 
 	return res;
 }
 
 MachineResult machine_real(char *in)
 {
-	//char *f = in;
-	//int s = 1;
+	char *f = in;
+	char *dot;
+	int s = 1;
 	MachineResult res;
 	res.token = NULL;
 	res.err = MACHINE_ERR_NONE;
 
-	// TODO
+	while (res.token == NULL && res.err == MACHINE_ERR_NONE)
+	{
+		switch (s)
+		{
+		case 0:
+			f--;
+			res.f = f;
+			res.err = MACHINE_ERR_NO_MATCH;
+		break;
+		case 1:
+			if (is_numeric(*f))
+				s++;
+			else
+				s--;
+		break;
+		case 2:
+			if (!is_numeric(*f))
+			{
+				if (*f == '.')
+				{
+					// make sure the int is not too long
+					if (f - in > MAX_REAL_XX_LEN)
+						res.err = MACHINE_ERR_REAL_XX_TOO_LONG;
+					else
+						s++;
+
+					dot = f;
+				}
+				else
+					s = 0;
+			}
+		break;
+		case 3:
+			if (!is_numeric(*f))
+				s++;
+		break;
+		case 4:
+			f--;
+
+			// make sure fraction is not too long
+			if (f - dot > MAX_REAL_YY_LEN)
+				res.err = MACHINE_ERR_REAL_YY_TOO_LONG;
+			else
+			{
+				// make sure int is not too long
+				if (f - in > MAX_INT_LEN)
+					res.err = MACHINE_ERR_INT_TOO_LONG;
+				else
+				{
+					res.token = (Token *)malloc(sizeof(Token));
+					res.token->type = TOKEN_NUM;
+					res.token->attribute = TOKEN_ATTRIBUTE_REAL;
+				}
+			}
+		break;
+		}
+
+		f++;
+	}
 
 	return res;
 }
 
 MachineResult machine_longreal(char *in)
 {
-	//char *f = in;
-	//int s = 1;
+	char *f = in;
+	char *dot;
+	char *sign
+	int s = 1;
 	MachineResult res;
 	res.token = NULL;
 	res.err = MACHINE_ERR_NONE;
 
-	// TODO
+	while (res.token == NULL && res.err == MACHINE_ERR_NONE)
+	{
+		switch (s)
+		{
+		case 0:
+			f--;
+			res.f = f;
+			res.err = MACHINE_ERR_NO_MATCH;
+		break;
+		case 1:
+			if (is_numeric(*f))
+				s++;
+			else
+				s--;
+		break;
+		case 2:
+			if (!is_numeric(*f))
+			{
+				if (*f == '.')
+				{
+					if (f - in > MAX_REAL_XX_LEN)
+						res.err = MACHINE_ERR_REAL_XX_TOO_LONG;
+					else
+						s++;
+				}
+				else
+					s = 0;
+			}
+		break;
+		case 3:
+			if (!is_numeric(*f))
+				s++;
+		break;
+		case 4:
+			if (!is_numeric(*f))
+			{
+				if (*f == 'E')
+				{
+					// make sure fraction is not too long
+					if (f - dot > MAX_REAL_YY_LEN)
+						res.err = MACHINE_ERR_REAL_YY_TOO_LONG;
+					
+					s++;
+				}
+				else
+					s = 0;
+			}
+		break;
+		case 5:
+
+		break;
+		case 6:
+
+		break;
+		case 7:
+
+		break;
+		case 8:
+			f--;
+
+			// make sure int is not too long
+			if (f - in > MAX_INT_LEN)
+				res.err = MACHINE_ERR_INT_TOO_LONG;
+			else
+			{
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_NUM;
+				res.token->attribute = TOKEN_ATTRIBUTE_REAL;
+			}
+		break;
+		}
+
+		f++;
+	}
 
 	return res;
 }

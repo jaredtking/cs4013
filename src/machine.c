@@ -89,16 +89,36 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 				s++;
 		break;
 		case 3:
-			// check if reserved word
-			// TODO
-
-			// check if too long
-			// TODO
-
+			f--;
 			res.f = f;
-			res.token = (Token *)malloc(sizeof(Token));
-			res.token->type = TOKEN_ID;
-			res.token->attribute = TOKEN_NO_ATTRIBUTE;
+
+			// check if reserved word
+			char *word = (char *)malloc(f - in + 1);
+			strncpy(word, in, f - in);
+			word[f - in] = '\0';
+
+			ReservedWord *rw = is_reserved_word(word, reserved_words);
+			if (rw != NULL)
+			{
+				res.token = (Token *)malloc(sizeof(Token));
+				// TODO this is incorrect
+				res.token->type = TOKEN_RESERVED_WORD;
+				res.token->attribute = TOKEN_NO_ATTRIBUTE;
+			}
+			else
+			{
+				// make sure id is not too long
+				if (strlen(word) > MAX_ID_LEN)
+				{
+					res.err = MACHINE_ERR_ID_TOO_LONG;
+				}
+				else
+				{
+					res.token = (Token *)malloc(sizeof(Token));
+					res.token->type = TOKEN_ID;
+					res.token->attribute = TOKEN_NO_ATTRIBUTE;
+				}				
+			}
 		break;
 		}
 
@@ -110,8 +130,8 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 
 MachineResult machine_catchall(char *in)
 {
-	char *f = in;
-	int s = 1;
+	//char *f = in;
+	//int s = 1;
 	MachineResult res;
 	res.token = NULL;
 	res.err = MACHINE_ERR_NONE;
@@ -123,8 +143,8 @@ MachineResult machine_catchall(char *in)
 
 MachineResult machine_int(char *in)
 {
-	char *f = in;
-	int s = 1;
+	//char *f = in;
+	//int s = 1;
 	MachineResult res;
 	res.token = NULL;
 	res.err = MACHINE_ERR_NONE;
@@ -136,8 +156,8 @@ MachineResult machine_int(char *in)
 
 MachineResult machine_real(char *in)
 {
-	char *f = in;
-	int s = 1;
+	//char *f = in;
+	//int s = 1;
 	MachineResult res;
 	res.token = NULL;
 	res.err = MACHINE_ERR_NONE;
@@ -149,8 +169,8 @@ MachineResult machine_real(char *in)
 
 MachineResult machine_longreal(char *in)
 {
-	char *f = in;
-	int s = 1;
+	//char *f = in;
+	//int s = 1;
 	MachineResult res;
 	res.token = NULL;
 	res.err = MACHINE_ERR_NONE;
@@ -164,12 +184,31 @@ MachineResult machine_longreal(char *in)
 
 int is_alpha(char c)
 {
-	return (c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' );
+	return ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' );
 }
 
 int is_alpha_numeric(char c)
 {
-	return is_alpha(c) || ( c >= '0' && c <= '9' );
+	return is_alpha (c) || is_numeric (c);
+}
+
+int is_numeric(char c)
+{
+	return c >= '0' && c <= '9';
+}
+
+ReservedWord *is_reserved_word(char *word, ReservedWord *reserved_words)
+{
+	ReservedWord *curr = reserved_words;
+	while (curr != NULL)
+	{
+		if (strcmp(word, curr->name) == 0)
+			return curr;
+
+		curr = curr->next;
+	}
+
+	return NULL;
 }
 
 int is_whitespace(char c)

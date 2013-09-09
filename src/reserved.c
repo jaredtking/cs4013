@@ -23,6 +23,7 @@ ReservedWord *tokenize_reserved_word_str (char *in)
 	strcpy(word->name, pieces[0]);
 	word->type = strtol(pieces[1], (char **)NULL, 10);
 	word->attribute = strtol(pieces[2], (char **)NULL, 10);
+	word->next = NULL;
 
 	return word;
 }

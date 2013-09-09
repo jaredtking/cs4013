@@ -9,6 +9,7 @@ typedef enum TokenType
 {
 	TOKEN_WHITESPACE,
 	TOKEN_ID,
+	TOKEN_RESERVED_WORD, // TODO temporary
 	TOKEN_PROGRAM,
 	TOKEN_VAR,
 	TOKEN_ARRAY,

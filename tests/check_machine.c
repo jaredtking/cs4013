@@ -1,5 +1,7 @@
 #include "check_machine.h"
 
+// TODO need to verify f values
+
 START_TEST (test_machine_ws)
 {
 	MachineResult res = machine_whitespace("\n\n\n\t\t\t\t\t     \t\t\n");
@@ -38,6 +40,12 @@ START_TEST (test_machine_idres)
 	ck_assert(res.token->type == TOKEN_ID);
 	ck_assert(res.token->attribute == TOKEN_NO_ATTRIBUTE);
 
+	// too long id
+	res = machine_idres("thisidiswaytooooolong", reserved_words);
+
+	ck_assert(res.err == MACHINE_ERR_ID_TOO_LONG);
+	ck_assert(res.token == NULL);
+
 	// invalid id
 	res = machine_idres("#*(*%(&not an id", reserved_words);
 
@@ -45,7 +53,13 @@ START_TEST (test_machine_idres)
 	ck_assert(res.token == NULL);
 
 	// check for reserved words
-	// TODO
+	res = machine_idres("while", reserved_words);
+
+	// TODO this is incomplete
+	ck_assert(res.err == MACHINE_ERR_NONE);
+	ck_assert(res.token != NULL);
+	ck_assert(res.token->type == TOKEN_RESERVED_WORD);
+	ck_assert(res.token->attribute == TOKEN_NO_ATTRIBUTE);
 }
 END_TEST
 

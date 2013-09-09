@@ -28,7 +28,7 @@ $(OUTDIR)/$(OUTNAME): $(OBJ)
 	@mkdir -p $(OUTDIR)
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
-.PHONY: clean check
+.PHONY: clean check test
 
 clean:
 	rm -f $(ODIR)/*.o *~ core $(IDIR)/*~ $(OUTDIR)/$(OUTNAME) $(OUTDIR)/tests
@@ -38,3 +38,6 @@ check: $(TESTS) $(OBJ_TEST)
 	gcc -o $(OUTDIR)/tests $^ `pkg-config --cflags --libs check` $(CFLAGS) $(LIBS)
 	@./$(OUTDIR)/tests
 	@rm -f $(OUTDIR)/tests
+
+test:
+	@make check

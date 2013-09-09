@@ -20,7 +20,7 @@ make
 Output from gcc will be in the `bin` directory.
 
 ```bash
-./bin/lexer
+./bin/lexer reserved_words_file source_file output_dir
 ```
 
 ### Testing

@@ -7,7 +7,7 @@ START_TEST (test_machine_ws)
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_WHITESPACE);
-	ck_assert(res.token->attribute == 0);
+	ck_assert(res.token->attribute == TOKEN_NO_ATTRIBUTE);
 
 	res = machine_whitespace("");
 

@@ -8,14 +8,15 @@
 typedef enum TokenType
 {
 	TOKEN_WHITESPACE,
-	NOTFOUND,
-	SOMETHINGELSE
+	TOKEN_LEXERR,
+	TOKEN_NO_ATTRIBUTE,
+	ERR_TOKEN_NOT_FOUND
 } TokenType;
 
 typedef struct Token
 {
 	TokenType type;
-	int attribute;
+	TokenType attribute;
 } Token;
 
 Token *get_next_token(char *line, ReservedWord *reserved_words);

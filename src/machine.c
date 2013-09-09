@@ -1,8 +1,23 @@
 #include "machine.h"
 
-void machine_omega()
+MachineResult machine_omega(char *in)
 {
+	/*
+	This machine is the super machine that ties all
+	of the other machines together. If no match is made
+	then an unrecognized LEXERR token will be returned.
+	There is an ordering to the machines according to:
+	  i) efficiency rule
+	  ii) tokenizing rule
+	*/
+	// TODO try all machines
 
+	// no match
+	MachineResult res;
+	res.token = (Token *)malloc(sizeof(Token));
+	res.token->type = TOKEN_LEXERR;
+	res.token->attribute = ERR_TOKEN_NOT_FOUND;
+	return res;
 }
 
 MachineResult machine_whitespace(char *in)
@@ -36,7 +51,7 @@ MachineResult machine_whitespace(char *in)
 			res.f = f;
 			res.token = (Token *)malloc(sizeof(Token));
 			res.token->type = TOKEN_WHITESPACE;
-			res.token->attribute = 0;
+			res.token->attribute = TOKEN_NO_ATTRIBUTE;
 		break;
 		}
 

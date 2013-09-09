@@ -6,7 +6,6 @@ before_install:
 - wget http://downloads.sourceforge.net/project/check/check/0.9.10/check-0.9.10.tar.gz
 - tar -xzf check-0.9.10.tar.gz
 - cd check-0.9.10/
-- ./configure --prefix=$HOME
+- ./configure --prefix=$TRAVIS_BUILD_DIR
 - make && make install
-- echo $PKG_CONFIG_PATH
 - cd ..

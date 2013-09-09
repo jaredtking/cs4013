@@ -8,6 +8,5 @@ before_install:
 - cd check-0.9.10/
 - ./configure --prefix=$HOME
 - make && make install
-- ls
-- echo PKG_CONFIG_PATH
+- echo $PKG_CONFIG_PATH
 - cd ..

@@ -5,22 +5,21 @@ void machine_omega()
 
 }
 
-void machine_whitespace(char *in)
+MachineResult machine_whitespace(char *in)
 {
 	char *f = in;
-	char *b;
 	int s = 1;
-	MachineResult *res;
+	MachineResult res;
+	res.token = NULL;
+	res.err = 0;
 
-	while (res == NULL)
+	while (res.token == NULL && res.err == 0)
 	{
 		switch (s)
 		{
 		case 0:
 			f--;
-			res = (MachineResult *)malloc(sizeof(MachineResult));
-			res->f = f;
-			res->token = NULL;
+			res.f = f;
 		break;
 		case 1:
 			if (*f == '\n' || *f == '\r' || *f == '\t' || *f == ' ')
@@ -29,17 +28,17 @@ void machine_whitespace(char *in)
 				s--;
 		break;
 		case 2:
-			if !(*f == '\n' || *f == '\r' || *f == '\t' || *f == ' ')
+			if (!(*f == '\n' || *f == '\r' || *f == '\t' || *f == ' '))
 				s++;
 		break;
 		case 3:
-			res = (MachineResult *)malloc(sizeof(MachineResult));
-			res->f = f;
-			res->token = (Token *)malloc(sizeof(Token));
-			res->token->type = 0;
-			res->token->attribute = 0;
+			res.f = f;
+			res.token = (Token *)malloc(sizeof(Token));
+			res.token->type = TOKEN_WHITESPACE;
+			res.token->attribute = 0;
 		break;
 		}
+
 		f++;
 	}
 

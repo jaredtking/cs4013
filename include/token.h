@@ -5,15 +5,16 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-enum TokenType
+typedef enum TokenType
 {
-	WHITESPACE,
-	NOTFOUND
-}
+	TOKEN_WHITESPACE,
+	NOTFOUND,
+	SOMETHINGELSE
+} TokenType;
 
-typedef union Token
+typedef struct Token
 {
-	enum TokenType type;
+	TokenType type;
 	int attribute;
 } Token;
 

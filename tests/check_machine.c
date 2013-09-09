@@ -2,11 +2,12 @@
 
 START_TEST (test_machine_ws)
 {
-	MachineResult *res = machine_ws("\n\n\n\t\t\t\t\t     \t\t\n");
+	MachineResult res = machine_whitespace("\n\n\n\t\t\t\t\t     \t\t\n");
 
-	chk_assert(res->token != NULL);
-	chk_assert(res->token->type == NOTFOUND);
-	chk_assert(res->token->attribute == 0);
+	ck_assert(res.err == 0);
+	ck_assert(res.token != NULL);
+	ck_assert(res.token->type == TOKEN_WHITESPACE);
+	ck_assert(res.token->attribute == 0);
 }
 END_TEST
 

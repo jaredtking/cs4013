@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	if (stat(output_dir, &fileStat) < 0)
 	{
 		mode_t process_mask = umask(0);
-		int result_code = mkdir(output_dir, S_IRWXU | S_IRWXG | S_IRWXO);
+		mkdir(output_dir, S_IRWXU | S_IRWXG | S_IRWXO);
 		umask(process_mask);
 
 		if (stat(output_dir, &fileStat) < 0)
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
 
 	int i = 1;
 
-	Token *t = getNextToken();
+//	Token *t = getNextToken();
 	while (fgets (line, 72, f) != NULL)
 	{
 		// output line to listing file
 		fprintf (lf, "%-10d%s", i, line);
 
 		// tokenize line
-		t = getNextToken(line);
+//		t = getNextToken(line);
 
 			// write token to tokens file
 

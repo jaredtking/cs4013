@@ -101,9 +101,8 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 			if (rw != NULL)
 			{
 				res.token = (Token *)malloc(sizeof(Token));
-				// TODO this is incorrect
-				res.token->type = TOKEN_RESERVED_WORD;
-				res.token->attribute = TOKEN_NO_ATTRIBUTE;
+				res.token->type = rw->type;
+				res.token->attribute = rw->attribute;
 			}
 			else
 			{

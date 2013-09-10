@@ -8,7 +8,6 @@ typedef enum TokenType
 {
 	TOKEN_WHITESPACE,
 	TOKEN_ID,
-	TOKEN_RESERVED_WORD, // TODO temporary
 	TOKEN_PROGRAM,
 	TOKEN_VAR,
 	TOKEN_ARRAY,
@@ -48,12 +47,13 @@ typedef struct Token
 typedef struct ReservedWord
 {
 	char *name;
-	int type;
-	int attribute;
+	TokenType type;
+	TokenType attribute;
 	struct ReservedWord *next;
 } ReservedWord;
 
-Token *get_next_token(char *line, ReservedWord *reserved_words);
+Token *get_next_token (char *line, ReservedWord *reserved_words);
 ReservedWord *tokenize_reserved_word_str (char *line);
+TokenType int_to_token_type (int id);
 
 #endif

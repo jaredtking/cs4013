@@ -55,10 +55,9 @@ START_TEST (test_machine_idres)
 	// check for reserved words
 	res = machine_idres("while", reserved_words);
 
-	// TODO this is incomplete
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
-	ck_assert(res.token->type == TOKEN_RESERVED_WORD);
+	ck_assert(res.token->type == TOKEN_WHILE);
 	ck_assert(res.token->attribute == TOKEN_NO_ATTRIBUTE);
 }
 END_TEST

@@ -236,19 +236,13 @@ MachineResult machine_real(char *in)
 			f--;
 
 			// make sure fraction is not too long
-			if (f - dot > MAX_REAL_YY_LEN)
+			if (f - dot - 1 > MAX_REAL_YY_LEN)
 				res.err = MACHINE_ERR_REAL_YY_TOO_LONG;
 			else
 			{
-				// make sure int is not too long
-				if (f - in > MAX_INT_LEN)
-					res.err = MACHINE_ERR_INT_TOO_LONG;
-				else
-				{
-					res.token = (Token *)malloc(sizeof(Token));
-					res.token->type = TOKEN_NUM;
-					res.token->attribute = TOKEN_ATTRIBUTE_REAL;
-				}
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_NUM;
+				res.token->attribute = TOKEN_ATTRIBUTE_REAL;
 			}
 		break;
 		}
@@ -263,7 +257,7 @@ MachineResult machine_longreal(char *in)
 {
 	char *f = in;
 	char *dot;
-	char *sign
+	char *sign;
 	int s = 1;
 	MachineResult res;
 	res.token = NULL;
@@ -293,6 +287,8 @@ MachineResult machine_longreal(char *in)
 						res.err = MACHINE_ERR_REAL_XX_TOO_LONG;
 					else
 						s++;
+
+					dot = f;
 				}
 				else
 					s = 0;
@@ -300,43 +296,54 @@ MachineResult machine_longreal(char *in)
 		break;
 		case 3:
 			if (!is_numeric(*f))
-				s++;
-		break;
-		case 4:
-			if (!is_numeric(*f))
 			{
 				if (*f == 'E')
 				{
 					// make sure fraction is not too long
-					if (f - dot > MAX_REAL_YY_LEN)
+					if (f - dot - 1 > MAX_REAL_YY_LEN)
 						res.err = MACHINE_ERR_REAL_YY_TOO_LONG;
-					
-					s++;
+					else
+						s++;
 				}
 				else
 					s = 0;
 			}
 		break;
+		case 4:
+			if (is_plus_or_minus(*f))
+				s++;
+			else if (is_numeric(*f))
+			{
+				s = 7;
+				sign = f;
+			}
+			else
+				s = 0;
+		break;
 		case 5:
-
+			if (is_numeric(*f))
+			{
+				s++;
+				sign = f;
+			}
+			else
+				s = 0;
 		break;
 		case 6:
-
+			if (!is_numeric(*f))
+				s++;
 		break;
 		case 7:
-
-		break;
-		case 8:
 			f--;
 
-			// make sure int is not too long
-			if (f - in > MAX_INT_LEN)
-				res.err = MACHINE_ERR_INT_TOO_LONG;
+			// make sure exponent is not too long
+			if (f - sign > MAX_REAL_ZZ_LEN)
+				res.err = MACHINE_ERR_REAL_ZZ_TOO_LONG;
 			else
 			{
 				res.token = (Token *)malloc(sizeof(Token));
 				res.token->type = TOKEN_NUM;
-				res.token->attribute = TOKEN_ATTRIBUTE_REAL;
+				res.token->attribute = TOKEN_ATTRIBUTE_LONGREAL;
 			}
 		break;
 		}
@@ -362,6 +369,11 @@ int is_alpha_numeric(char c)
 int is_numeric(char c)
 {
 	return c >= '0' && c <= '9';
+}
+
+int is_plus_or_minus(char c)
+{
+	return c == '+' || c == '-';
 }
 
 ReservedWord *is_reserved_word(char *word, ReservedWord *reserved_words)

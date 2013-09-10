@@ -41,6 +41,7 @@ MachineResult machine_longreal(char *in);
 int is_alpha(char c);
 int is_alpha_numeric(char c);
 int is_numeric(char c);
+int is_plus_or_minus(char c);
 ReservedWord *is_reserved_word(char *word, ReservedWord *reserved_words);
 int is_whitespace(char c);
 

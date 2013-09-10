@@ -119,14 +119,14 @@ END_TEST
 
 START_TEST (test_machine_longreal)
 {
-	MachineResult res = machine_longreal("12.34E+1");
+	MachineResult res = machine_longreal("12345.01E+1");
 
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == TOKEN_ATTRIBUTE_LONGREAL);
 
-	res = machine_longreal("12.34E-22");
+	res = machine_longreal("12.34567E-22");
 
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
@@ -160,7 +160,7 @@ START_TEST (test_machine_longreal)
 	ck_assert(res.err == MACHINE_ERR_REAL_YY_TOO_LONG);
 	ck_assert(res.token == NULL);	
 
-	res = machine_longreal("12345.803E+123");
+	res = machine_longreal("12345.803E-123");
 
 	ck_assert(res.err == MACHINE_ERR_REAL_ZZ_TOO_LONG);
 	ck_assert(res.token == NULL);

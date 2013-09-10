@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "reserved.h"
+#include "token.h"
 
 int main(int argc, char **argv)
 {

@@ -5,6 +5,7 @@ Token *get_next_token(char *line, ReservedWord *reserved_words)
 	static b = 0;
 	static f = 0;
 	
+	// TODO
 }
 
 ReservedWord *tokenize_reserved_word_str (char *in)
@@ -29,7 +30,7 @@ ReservedWord *tokenize_reserved_word_str (char *in)
 	word->name = malloc(201);
 	strcpy(word->name, pieces[0]);
 	word->type = int_to_token_type(strtol(pieces[1], (char **)NULL, 10));
-	word->attribute = int_to_token_type(strtol(pieces[2], (char **)NULL, 10));
+	word->attribute = strtol(pieces[2], (char **)NULL, 10);
 	word->next = NULL;
 
 	return word;
@@ -37,45 +38,43 @@ ReservedWord *tokenize_reserved_word_str (char *in)
 
 TokenType int_to_token_type (int id)
 {
-	if (id == 0)
-		return TOKEN_NO_ATTRIBUTE;
-	if (id == 100)
+	if (id == 1000)
 		return TOKEN_PROGRAM;
-	else if (id == 101)
+	else if (id == 1001)
 		return TOKEN_VAR;
-	else if (id == 102)
+	else if (id == 1002)
 		return TOKEN_ARRAY;
-	else if (id == 103)
+	else if (id == 1003)
 		return TOKEN_OF;
-	else if (id == 104)
+	else if (id == 1004)
 		return TOKEN_INTEGER;
-	else if (id == 105)
+	else if (id == 1005)
 		return TOKEN_REAL;
-	else if (id == 106)
+	else if (id == 1006)
 		return TOKEN_PROCEDURE;
-	else if (id == 107)
+	else if (id == 1007)
 		return TOKEN_BEGIN;
-	else if (id == 108)
+	else if (id == 1008)
 		return TOKEN_END;
-	else if (id == 109)
+	else if (id == 1009)
 		return TOKEN_IF;
-	else if (id == 110)
+	else if (id == 1010)
 		return TOKEN_THEN;
-	else if (id == 111)
+	else if (id == 1011)
 		return TOKEN_ELSE;
-	else if (id == 112)
+	else if (id == 1012)
 		return TOKEN_WHILE;
-	else if (id == 113)
+	else if (id == 1013)
 		return TOKEN_DO;
-	else if (id == 114)
+	else if (id == 1014)
 		return TOKEN_NOT;
-	else if (id == 115)
+	else if (id == 1015)
 		return TOKEN_OR;
-	else if (id == 116)
+	else if (id == 1016)
 		return TOKEN_DIV;
-	else if (id == 117)
+	else if (id == 1017)
 		return TOKEN_MOD;
-	else if (id == 118)
+	else if (id == 1018)
 		return TOKEN_AND;
 	else
 		return ERR_TOKEN_NOT_FOUND;

@@ -16,7 +16,7 @@ MachineResult machine_omega(char *in)
 	MachineResult res;
 	res.token = (Token *)malloc(sizeof(Token));
 	res.token->type = TOKEN_LEXERR;
-	res.token->attribute = ERR_TOKEN_NOT_FOUND;
+	res.token->attribute = 0;
 	return res;
 }
 
@@ -32,12 +32,11 @@ MachineResult machine_whitespace(char *in)
 	{
 		switch (s)
 		{
-		case 0:
-			f--;
-			res.f = f;
+		case 0: // no match
+			res.f = --f;
 			res.err = MACHINE_ERR_NO_MATCH;
 		break;
-		case 1:
+		case 1: // start
 			if (is_whitespace(*f))
 				s++;
 			else
@@ -48,10 +47,10 @@ MachineResult machine_whitespace(char *in)
 				s++;
 		break;
 		case 3:
-			res.f = f;
+			res.f = --f;
 			res.token = (Token *)malloc(sizeof(Token));
 			res.token->type = TOKEN_WHITESPACE;
-			res.token->attribute = TOKEN_NO_ATTRIBUTE;
+			res.token->attribute = 0;
 		break;
 		}
 
@@ -73,12 +72,11 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 	{
 		switch (s)
 		{
-		case 0:
-			f--;
-			res.f = f;
+		case 0: // no match
+			res.f = --f;
 			res.err = MACHINE_ERR_NO_MATCH;
 		break;
-		case 1:
+		case 1: // start
 			if (is_alpha(*f))
 				s++;
 			else
@@ -89,8 +87,7 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 				s++;
 		break;
 		case 3:
-			f--;
-			res.f = f;
+			res.f = --f;
 
 			// check if reserved word
 			char *word = (char *)malloc(f - in + 1);
@@ -113,7 +110,7 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 				{
 					res.token = (Token *)malloc(sizeof(Token));
 					res.token->type = TOKEN_ID;
-					res.token->attribute = TOKEN_NO_ATTRIBUTE;
+					res.token->attribute = 0;
 				}
 			}
 		break;
@@ -123,19 +120,6 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 	}
 
 	return res;		
-}
-
-MachineResult machine_catchall(char *in)
-{
-	//char *f = in;
-	//int s = 1;
-	MachineResult res;
-	res.token = NULL;
-	res.err = MACHINE_ERR_NONE;
-
-	// TODO
-
-	return res;
 }
 
 MachineResult machine_int(char *in)
@@ -150,12 +134,11 @@ MachineResult machine_int(char *in)
 	{
 		switch (s)
 		{
-		case 0:
-			f--;
-			res.f = f;
+		case 0: // no match
+			res.f = --f;
 			res.err = MACHINE_ERR_NO_MATCH;
 		break;
-		case 1:
+		case 1: // start
 			if (is_numeric(*f))
 				s++;
 			else
@@ -166,7 +149,7 @@ MachineResult machine_int(char *in)
 				s++;
 		break;
 		case 3:
-			f--;
+			res.f = --f;
 
 			// make sure int is not too long
 			if (f - in > MAX_INT_LEN)
@@ -175,7 +158,7 @@ MachineResult machine_int(char *in)
 			{
 				res.token = (Token *)malloc(sizeof(Token));
 				res.token->type = TOKEN_NUM;
-				res.token->attribute = TOKEN_ATTRIBUTE_INT;
+				res.token->attribute = ATTRIBUTE_INT;
 			}
 		break;
 		}
@@ -199,12 +182,11 @@ MachineResult machine_real(char *in)
 	{
 		switch (s)
 		{
-		case 0:
-			f--;
-			res.f = f;
+		case 0: // no match
+			res.f = --f;
 			res.err = MACHINE_ERR_NO_MATCH;
 		break;
-		case 1:
+		case 1: // start
 			if (is_numeric(*f))
 				s++;
 			else
@@ -232,7 +214,7 @@ MachineResult machine_real(char *in)
 				s++;
 		break;
 		case 4:
-			f--;
+			res.f = --f;
 
 			// make sure fraction is not too long
 			if (f - dot - 1 > MAX_REAL_YY_LEN)
@@ -241,7 +223,7 @@ MachineResult machine_real(char *in)
 			{
 				res.token = (Token *)malloc(sizeof(Token));
 				res.token->type = TOKEN_NUM;
-				res.token->attribute = TOKEN_ATTRIBUTE_REAL;
+				res.token->attribute = ATTRIBUTE_REAL;
 			}
 		break;
 		}
@@ -266,12 +248,11 @@ MachineResult machine_longreal(char *in)
 	{
 		switch (s)
 		{
-		case 0:
-			f--;
-			res.f = f;
+		case 0: // no match
+			res.f = --f;
 			res.err = MACHINE_ERR_NO_MATCH;
 		break;
-		case 1:
+		case 1: // start
 			if (is_numeric(*f))
 				s++;
 			else
@@ -333,7 +314,7 @@ MachineResult machine_longreal(char *in)
 				s++;
 		break;
 		case 7:
-			f--;
+			res.f = --f;
 
 			// make sure exponent is not too long
 			if (f - sign > MAX_REAL_ZZ_LEN)
@@ -342,7 +323,217 @@ MachineResult machine_longreal(char *in)
 			{
 				res.token = (Token *)malloc(sizeof(Token));
 				res.token->type = TOKEN_NUM;
-				res.token->attribute = TOKEN_ATTRIBUTE_LONGREAL;
+				res.token->attribute = ATTRIBUTE_LONGREAL;
+			}
+		break;
+		}
+
+		f++;
+	}
+
+	return res;
+}
+
+MachineResult machine_relop(char *in)
+{
+	char *f = in;
+	int s = 1;
+	MachineResult res;
+	res.token = NULL;
+	res.err = MACHINE_ERR_NONE;
+
+	while (res.token == NULL && res.err == MACHINE_ERR_NONE)
+	{
+		switch (s)
+		{
+		case 0: // no match
+			res.f = --f;
+			res.err = MACHINE_ERR_NO_MATCH;
+		break;
+		case 1: // start
+			if (*f == '>')
+				s = 2;
+			else if (*f == '<')
+				s = 3;
+			else if (*f == '=')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RELOP;
+				res.token->attribute = '=';
+			}
+			else
+				s--;
+		break;
+		case 2:
+			if (*f == '=')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RELOP;
+				res.token->attribute = ATTRIBUTE_GE;
+			}
+			else
+			{
+				res.f = --f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RELOP;
+				res.token->attribute = '>';
+			}
+		break;
+		case 3:
+			if (*f == '=')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RELOP;
+				res.token->attribute = ATTRIBUTE_LE;
+
+			}
+			else if (*f == '>')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RELOP;
+				res.token->attribute = ATTRIBUTE_NE;				
+			}
+			else
+			{
+				res.f = --f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RELOP;
+				res.token->attribute = '<';
+			}
+		break;
+		}
+
+		f++;
+	}
+
+
+	return res;
+}
+
+MachineResult machine_catchall(char *in)
+{
+	char *f = in;
+	int s = 1;
+	MachineResult res;
+	res.token = NULL;
+	res.err = MACHINE_ERR_NONE;
+
+	while (res.token == NULL && res.err == MACHINE_ERR_NONE)
+	{
+		switch (s)
+		{
+		case 0: // no match
+			res.f = --f;
+			res.err = MACHINE_ERR_NO_MATCH;
+		break;
+		case 1: // start
+			if (*f == '+')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_ADDOP;
+				res.token->attribute = *f;
+			}
+			else if (*f == '-')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_ADDOP;
+				res.token->attribute = *f;
+			}
+			else if (*f == '*')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_MULOP;
+				res.token->attribute = *f;
+			}
+			else if (*f == '/')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_MULOP;
+				res.token->attribute = *f;
+			}
+			else if (*f == ',')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_COMMA;
+				res.token->attribute = 0;
+			}
+			else if (*f == ';')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_SEMICOLON;
+				res.token->attribute = 0;
+			}
+			else if (*f == '(')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_LPAREN;
+				res.token->attribute = 0;
+			}
+			else if (*f == ')')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RPAREN;
+				res.token->attribute = 0;
+			}
+			else if (*f == '[')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_LBRACKET;
+				res.token->attribute = 0;
+			}
+			else if (*f == ']')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_RBRACKET;
+				res.token->attribute = 0;
+			}			
+			else if (*f == '.')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_PERIOD;
+				res.token->attribute = 0;
+			}
+			else if (*f == ',')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_COMMA;
+				res.token->attribute = 0;
+			}
+			else if (*f == ':')
+				s = 2;
+			else
+				s = 0;
+		break;
+		case 2:
+			if (*f == '=')
+			{
+				res.f = f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_ASSIGNOP;
+				res.token->attribute = 0;
+			}
+			else
+			{
+				res.f = --f;
+				res.token = (Token *)malloc(sizeof(Token));
+				res.token->type = TOKEN_COLON;
+				res.token->attribute = 0;
 			}
 		break;
 		}

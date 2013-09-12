@@ -19,3 +19,7 @@ obj/
 
 .DS_STORE
 *.!sync
+
+bin/output
+bin/lexer
+bin/tests

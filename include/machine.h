@@ -37,6 +37,8 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words);
 MachineResult machine_int(char *in);
 MachineResult machine_real(char *in);
 MachineResult machine_longreal(char *in);
+MachineResult machine_relop(char *in);
+MachineResult machine_catchall(char *in);
 
 int is_alpha(char c);
 int is_alpha_numeric(char c);

@@ -2,17 +2,17 @@
 
 START_TEST (test_reserved_words)
 {
-	ReservedWord *word = tokenize_reserved_word_str ("program\t100\t0");
+	ReservedWord *word = tokenize_reserved_word_str ("program\t1000\t0");
 
 	ck_assert(strcmp(word->name, "program") == 0);
 	ck_assert(word->type == TOKEN_PROGRAM);
-	ck_assert(word->attribute == TOKEN_NO_ATTRIBUTE);
+	ck_assert(word->attribute == 0);
 
-	word = tokenize_reserved_word_str ("and\t118\t100");
+	word = tokenize_reserved_word_str ("and\t1018\t100");
 
 	ck_assert(strcmp(word->name, "and") == 0);
 	ck_assert(word->type == TOKEN_AND);
-	ck_assert(word->attribute == TOKEN_PROGRAM);
+	ck_assert(word->attribute == 100);
 }
 END_TEST
 

@@ -41,13 +41,14 @@ typedef enum TokenType
 	TOKEN_LBRACKET,
 	TOKEN_RBRACKET,
 	ERR_TOKEN_NOT_FOUND,
-	TOKEN_LEXERR
+	TOKEN_LEXERR,
+	TOKEN_EMPTY
 } TokenType;
 
 typedef struct Token
 {
 	TokenType type;
-	TokenType attribute;
+	int attribute;
 } Token;
 
 #define ATTRIBUTE_INT 999
@@ -62,8 +63,7 @@ typedef struct Token
 typedef struct ReservedWord
 {
 	char *name;
-	TokenType type;
-	int attribute;
+	Token *token;
 	struct ReservedWord *next;
 } ReservedWord;
 

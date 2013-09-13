@@ -7,24 +7,11 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
-typedef enum MachineError
-{
-	MACHINE_ERR_NONE,
-	MACHINE_ERR_NO_MATCH,
-	MACHINE_ERR_ID_TOO_LONG,
-	MACHINE_ERR_INT_TOO_LONG,
-	MACHINE_ERR_REAL_XX_TOO_LONG,
-	MACHINE_ERR_REAL_YY_TOO_LONG,
-	MACHINE_ERR_REAL_ZZ_TOO_LONG,
-	MACHINE_ERR_NUM_LEADING_ZERO
-} MachineError;
-
 typedef struct MachineResult
 {
 	char *lexeme;
 	Token *token;
 	char *f;
-	MachineError err;
 } MachineResult;
 
 #define MAX_ID_LEN 10
@@ -33,13 +20,21 @@ typedef struct MachineResult
 #define MAX_REAL_YY_LEN 5
 #define MAX_REAL_ZZ_LEN 2
 
+#define MACHINE_ERR_NONE 0
+#define MACHINE_ERR_NO_MATCH 1
+#define MACHINE_ERR_ID_TOO_LONG 2
+#define MACHINE_ERR_INT_TOO_LONG 3
+#define MACHINE_ERR_REAL_XX_TOO_LONG 4
+#define MACHINE_ERR_REAL_YY_TOO_LONG 5
+#define MACHINE_ERR_REAL_ZZ_TOO_LONG 6
+#define MACHINE_ERR_NUM_LEADING_ZERO 7
+
 MachineResult machine_omega(char *in, ReservedWord *reserved_words);
 MachineResult machine_whitespace(char *in);
 MachineResult machine_idres(char *in, ReservedWord *reserved_words);
 MachineResult machine_int(char *in);
 MachineResult machine_real(char *in);
 MachineResult machine_longreal(char *in);
-MachineResult machine_relop(char *in);
 MachineResult machine_catchall(char *in);
 
 int is_alpha(char c);

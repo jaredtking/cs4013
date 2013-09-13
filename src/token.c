@@ -2,8 +2,8 @@
 
 Token *get_next_token(char *line, ReservedWord *reserved_words)
 {
-	static b = 0;
-	static f = 0;
+//	static b = 0;
+//	static f = 0;
 	
 	// TODO
 }
@@ -29,8 +29,11 @@ ReservedWord *tokenize_reserved_word_str (char *in)
 
 	word->name = malloc(201);
 	strcpy(word->name, pieces[0]);
-	word->type = int_to_token_type(strtol(pieces[1], (char **)NULL, 10));
-	word->attribute = strtol(pieces[2], (char **)NULL, 10);
+
+	word->token = (Token *)malloc(sizeof(Token));
+	word->token->type = int_to_token_type(strtol(pieces[1], (char **)NULL, 10));
+	word->token->attribute = strtol(pieces[2], (char **)NULL, 10);
+
 	word->next = NULL;
 
 	return word;

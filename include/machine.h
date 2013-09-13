@@ -15,11 +15,13 @@ typedef enum MachineError
 	MACHINE_ERR_INT_TOO_LONG,
 	MACHINE_ERR_REAL_XX_TOO_LONG,
 	MACHINE_ERR_REAL_YY_TOO_LONG,
-	MACHINE_ERR_REAL_ZZ_TOO_LONG
+	MACHINE_ERR_REAL_ZZ_TOO_LONG,
+	MACHINE_ERR_NUM_LEADING_ZERO
 } MachineError;
 
 typedef struct MachineResult
 {
+	char *lexeme;
 	Token *token;
 	char *f;
 	MachineError err;
@@ -31,7 +33,7 @@ typedef struct MachineResult
 #define MAX_REAL_YY_LEN 5
 #define MAX_REAL_ZZ_LEN 2
 
-MachineResult machine_omega(char *in);
+MachineResult machine_omega(char *in, ReservedWord *reserved_words);
 MachineResult machine_whitespace(char *in);
 MachineResult machine_idres(char *in, ReservedWord *reserved_words);
 MachineResult machine_int(char *in);

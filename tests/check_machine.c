@@ -1,23 +1,25 @@
 #include "check_machine.h"
 
-// TODO need to verify f values
-
 START_TEST (test_machine_ws)
 {
-	MachineResult res = machine_whitespace("\n\n\n\t\t\t\t\t     \t\t\n");
+	char *str = "\n\n\n\t\t\t\t\t     \t\t\n";
+	MachineResult res = machine_whitespace(str);
 
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_WHITESPACE);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_whitespace("");
-
+	// empty string
+	str = "";
+	res = machine_whitespace(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 
-	res = machine_whitespace("not whitespace");
-
+	// invalid whitespace
+	str = "notwhitespace";
+	res = machine_whitespace(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 }
@@ -33,185 +35,258 @@ START_TEST (test_machine_idres)
 	next->next = next2;
 
 	// valid id
-	MachineResult res = machine_idres("isthisanid", reserved_words);
-
+	char *str = "isthisanid";
+	MachineResult res = machine_idres(str, reserved_words);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_ID);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
 	// too long id
-	res = machine_idres("thisidiswaytooooolong", reserved_words);
-
+	str = "thisidiswaytooooolong";
+	res = machine_idres(str, reserved_words);
 	ck_assert(res.err == MACHINE_ERR_ID_TOO_LONG);
 	ck_assert(res.token == NULL);
 
 	// invalid id
-	res = machine_idres("#*(*%(&not an id", reserved_words);
-
+	str = "#*(*%(&not an id";
+	res = machine_idres(str, reserved_words);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 
 	// check for reserved words
-	res = machine_idres("while", reserved_words);
-
+	str = "while";
+	res = machine_idres(str, reserved_words);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_WHILE);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 }
 END_TEST
 
 START_TEST (test_machine_int)
 {
-	MachineResult res = machine_int("1234567890");
-
+	// valid int
+	char *str = "1234567890";
+	MachineResult res = machine_int(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_INT);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_int("notanint");
+	// valid int
+	str = "0";
+	res = machine_int(str);
+	ck_assert(res.err == MACHINE_ERR_NONE);
+	ck_assert(res.token != NULL);
+	ck_assert(res.token->type == TOKEN_NUM);
+	ck_assert(res.token->attribute == ATTRIBUTE_INT);
+	ck_assert(res.f == str + strlen(str));
 
+	// invalid int
+	str = "notanint";
+	res = machine_int(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 
-	res = machine_int("12345678901");
-
+	// int too long
+	str = "12345678901";
+	res = machine_int(str);
 	ck_assert(res.err == MACHINE_ERR_INT_TOO_LONG);
+	ck_assert(res.token == NULL);
+
+	// leading zero
+	str = "007";
+	res = machine_int(str);
+	ck_assert(res.err == MACHINE_ERR_NUM_LEADING_ZERO);
 	ck_assert(res.token == NULL);
 }
 END_TEST
 
 START_TEST (test_machine_real)
 {
-	MachineResult res = machine_real("12.34567");
-
+	// valid real
+	char *str = "12.34567";
+	MachineResult res = machine_real(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_REAL);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_real("12345.");
-
+	// valid real
+	str = "12345.";
+	res = machine_real(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_REAL);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_real("123408");
-
+	// invalid real
+	str = "123408";
+	res = machine_real(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 
-	res = machine_real("123456.803");
-
+	// real xx too long
+	str = "123456.803";
+	res = machine_real(str);
 	ck_assert(res.err == MACHINE_ERR_REAL_XX_TOO_LONG);
 	ck_assert(res.token == NULL);
 
-	res = machine_real("12.345678");
-
+	// real yy too long
+	str = "12.345678";
+	res = machine_real(str);
 	ck_assert(res.err == MACHINE_ERR_REAL_YY_TOO_LONG);
-	ck_assert(res.token == NULL);	
+	ck_assert(res.token == NULL);
+
+	// leading zero
+	str = "007.1";
+	res = machine_real(str);
+	ck_assert(res.err == MACHINE_ERR_NUM_LEADING_ZERO);
+	ck_assert(res.token == NULL);
 }
 END_TEST
 
 START_TEST (test_machine_longreal)
 {
-	MachineResult res = machine_longreal("12345.01E+1");
-
+	// valid longreal
+	char *str = "12345.01E+1";
+	MachineResult res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_LONGREAL);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_longreal("12.34567E-22");
-
+	// valid longreal
+	str = "12.34567E-22";
+	res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_LONGREAL);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_longreal("12.E13");
-
+	// valid longreal
+	str = "12.34E13";
+	res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_LONGREAL);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_longreal("123408");
+	// valid longreal
+	str = "12.E13";
+	res = machine_longreal(str);
+	ck_assert(res.err == MACHINE_ERR_NONE);
+	ck_assert(res.token != NULL);
+	ck_assert(res.token->type == TOKEN_NUM);
+	ck_assert(res.token->attribute == ATTRIBUTE_LONGREAL);
+	ck_assert(res.f == str + strlen(str));
 
+	// no match (int)
+	str = "123408";
+	res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 
-	res = machine_longreal("1234.08");
-
+	// no match (real)
+	str = "1234.08";
+	res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 
-	res = machine_longreal("123456.803E+2");
-
+	// longreal xx too long
+	str = "123456.803E+2";
+	res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_REAL_XX_TOO_LONG);
 	ck_assert(res.token == NULL);
 
-	res = machine_longreal("12.345678E+1");
-
+	// longreal yy too long
+	str = "12.345678E+1";
+	res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_REAL_YY_TOO_LONG);
 	ck_assert(res.token == NULL);	
 
-	res = machine_longreal("12345.803E-123");
-
+	// longreal zz too long
+	str = "12345.803E-123";
+	res = machine_longreal(str);
 	ck_assert(res.err == MACHINE_ERR_REAL_ZZ_TOO_LONG);
+	ck_assert(res.token == NULL);
+
+	// leading zero
+	str = "007.1E19";
+	res = machine_longreal(str);
+	ck_assert(res.err == MACHINE_ERR_NUM_LEADING_ZERO);
 	ck_assert(res.token == NULL);
 }
 END_TEST
 
 START_TEST (test_machine_relop)
 {
-	MachineResult res = machine_relop(">");
-
+	// valid gt
+	char *str = ">";
+	MachineResult res = machine_relop(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RELOP);
 	ck_assert(res.token->attribute == '>');
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_relop(">=");
-
+	// valid gte
+	str = ">=";
+	res = machine_relop(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RELOP);
 	ck_assert(res.token->attribute == ATTRIBUTE_GE);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_relop("<");
-
+	// valid lt
+	str = "<";
+	res = machine_relop(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RELOP);
 	ck_assert(res.token->attribute == '<');
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_relop("<=");
-
+	// valid lte
+	str = "<=";
+	res = machine_relop(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RELOP);
 	ck_assert(res.token->attribute == ATTRIBUTE_LE);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_relop("<>");
-
+	// valid ne
+	str = "<>";
+	res = machine_relop(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RELOP);
 	ck_assert(res.token->attribute == ATTRIBUTE_NE);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_relop("=");
-
+	// valid e
+	str = "=";
+	res = machine_relop(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RELOP);
 	ck_assert(res.token->attribute == '=');
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_relop("notarelop");
-
+	// invalid
+	str = "notarelop";
+	res = machine_relop(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 }
@@ -219,99 +294,113 @@ END_TEST
 
 START_TEST (test_machine_catchall)
 {
-	MachineResult res = machine_catchall("+");
-
+	char *str = "+";
+	MachineResult res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_ADDOP);
 	ck_assert(res.token->attribute == '+');
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall("-");
-
+	str = "-";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_ADDOP);
 	ck_assert(res.token->attribute == '-');
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall("*");
-
+	str = "*";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_MULOP);
 	ck_assert(res.token->attribute == '*');
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall("/");
-
+	str = "/";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_MULOP);
 	ck_assert(res.token->attribute == '/');
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall(",");
-
+	str = ",";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_COMMA);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall(".");
-
+	str = ".";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_PERIOD);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall(";");
-
+	str = ";";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_SEMICOLON);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall("(");
-
+	str = "(";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_LPAREN);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall(")");
-
+	str = ")";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RPAREN);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall("[");
-
+	str = "[";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_LBRACKET);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall("]");
-
+	str = "]";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_RBRACKET);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall(":");
-
+	str = ":";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_COLON);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall(":=");
-
+	str = ":=";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NONE);
 	ck_assert(res.token != NULL);
 	ck_assert(res.token->type == TOKEN_ASSIGNOP);
 	ck_assert(res.token->attribute == 0);
+	ck_assert(res.f == str + strlen(str));
 
-	res = machine_catchall("thisdoesnotwork");
-
+	// invalid
+	str = "thisdoesnotwork";
+	res = machine_catchall(str);
 	ck_assert(res.err == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.token == NULL);
 }

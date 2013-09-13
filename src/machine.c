@@ -31,6 +31,11 @@ MachineResult machine_omega(char *in, ReservedWord *reserved_words)
 		i++;
 	}
 
+	// calculate resulting lexeme
+	res.lexeme = (char *)malloc(res.f - in + 1);
+	strncpy(res.lexeme, in, res.f - in);
+	res.lexeme[res.f - in] = '\0';	
+
 	return res;
 }
 
@@ -70,11 +75,6 @@ MachineResult machine_whitespace(char *in)
 	}
 
 	res.f = f;
-
-	// calculate resulting lexeme
-	res.lexeme = (char *)malloc(res.f - in + 1);
-	strncpy(res.lexeme, in, res.f - in);
-	res.lexeme[res.f - in] = '\0';
 
 	return res;
 }
@@ -137,11 +137,6 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 
 	res.f = f;
 
-	// calculate resulting lexeme
-	res.lexeme = (char *)malloc(res.f - in + 1);
-	strncpy(res.lexeme, in, res.f - in);
-	res.lexeme[res.f - in] = '\0';	
-
 	return res;		
 }
 
@@ -198,11 +193,6 @@ MachineResult machine_int(char *in)
 	}
 
 	res.f = f;
-
-	// calculate resulting lexeme
-	res.lexeme = (char *)malloc(res.f - in + 1);
-	strncpy(res.lexeme, in, res.f - in);
-	res.lexeme[res.f - in] = '\0';	
 
 	return res;
 }
@@ -280,11 +270,6 @@ MachineResult machine_real(char *in)
 	}
 
 	res.f = f;
-
-	// calculate resulting lexeme
-	res.lexeme = (char *)malloc(res.f - in + 1);
-	strncpy(res.lexeme, in, res.f - in);
-	res.lexeme[res.f - in] = '\0';	
 
 	return res;
 }
@@ -394,11 +379,6 @@ MachineResult machine_longreal(char *in)
 	}
 
 	res.f = f;
-
-	// calculate resulting lexeme
-	res.lexeme = (char *)malloc(res.f - in + 1);
-	strncpy(res.lexeme, in, res.f - in);
-	res.lexeme[res.f - in] = '\0';	
 
 	return res;
 }
@@ -543,11 +523,6 @@ MachineResult machine_catchall(char *in)
 	}
 
 	res.f = f;
-
-	// calculate resulting lexeme
-	res.lexeme = (char *)malloc(res.f - in + 1);
-	strncpy(res.lexeme, in, res.f - in);
-	res.lexeme[res.f - in] = '\0';	
 
 	return res;
 }

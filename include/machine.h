@@ -1,18 +1,10 @@
-#include <stdlib.h>
-#include <string.h>
-
-#include "token.h"
-#include <stdio.h>
-
 #ifndef MACHINE_H
 #define MACHINE_H
 
-typedef struct MachineResult
-{
-	char *lexeme;
-	Token *token;
-	char *f;
-} MachineResult;
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include "token.h"
 
 #define MAX_ID_LEN 10
 #define MAX_INT_LEN 10

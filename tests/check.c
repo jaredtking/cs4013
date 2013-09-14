@@ -2,13 +2,13 @@
 #include <check.h>
 
 #include "check_machine.h"
-#include "check_reserved.h"
+#include "check_token.h"
 
 int main (void)
 {
 	Suite *suites[] = {
 		machine_suite(),
-		reserved_suite()
+		token_suite()
 	};
 
 	int retval = EXIT_SUCCESS;

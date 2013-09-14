@@ -1,8 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
-
 #ifndef TOKEN_H
 #define TOKEN_H
+
+#include <stdlib.h>
+#include <string.h>
 
 typedef enum TokenType
 {
@@ -67,7 +67,13 @@ typedef struct ReservedWord
 	struct ReservedWord *next;
 } ReservedWord;
 
-Token *get_next_token (char *line, ReservedWord *reserved_words);
+typedef struct MachineResult {
+	char *lexeme;
+	Token *token;
+	char *f;
+} MachineResult;
+
+MachineResult *get_next_token (char *line, ReservedWord *reserved_words);
 ReservedWord *tokenize_reserved_word_str (char *line);
 TokenType int_to_token_type (int id);
 

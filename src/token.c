@@ -1,11 +1,30 @@
 #include "token.h"
+#include "machine.h"
 
-Token *get_next_token(char *line, ReservedWord *reserved_words)
+MachineResult *get_next_token(char *line, ReservedWord *reserved_words)
 {
-//	static b = 0;
-//	static f = 0;
-	
-	// TODO
+	static char *f;
+	static char l[72];
+
+	// remember where we were last by storing f internally
+	if (strcmp(line, l) != 0)
+	{
+		strcpy(l, line);
+		f = l;
+	}
+
+	if (f - l > 72)
+		return NULL;
+
+	MachineResult r = machine_omega(f, reserved_words);
+
+	MachineResult *result = (MachineResult *)malloc(sizeof(MachineResult));
+	memcpy(result, &r, sizeof(MachineResult));
+
+	// advance our internal pointer
+	f = r.f;
+
+	return result;
 }
 
 ReservedWord *tokenize_reserved_word_str (char *in)

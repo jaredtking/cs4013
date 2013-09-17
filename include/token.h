@@ -15,6 +15,7 @@ typedef enum TokenType
 	TOKEN_INTEGER,
 	TOKEN_REAL,
 	TOKEN_PROCEDURE,
+	TOKEN_FUNCTION,
 	TOKEN_BEGIN,
 	TOKEN_END,
 	TOKEN_IF,
@@ -23,10 +24,6 @@ typedef enum TokenType
 	TOKEN_WHILE,
 	TOKEN_DO,
 	TOKEN_NOT,
-	TOKEN_OR,
-	TOKEN_DIV,
-	TOKEN_MOD,
-	TOKEN_AND,
 	TOKEN_NUM,
 	TOKEN_RELOP,
 	TOKEN_MULOP,
@@ -40,6 +37,7 @@ typedef enum TokenType
 	TOKEN_RPAREN,
 	TOKEN_LBRACKET,
 	TOKEN_RBRACKET,
+	TOKEN_EOF,
 	ERR_TOKEN_NOT_FOUND,
 	TOKEN_LEXERR,
 	TOKEN_EMPTY
@@ -57,8 +55,14 @@ typedef struct Token
 #define ATTRIBUTE_GE 996
 #define ATTRIBUTE_LE 995
 #define ATTRIBUTE_NE 994
+#define ATTRIBUTE_AND 993
+#define ATTRIBUTE_OR 992
+#define ATTRIBUTE_DIV 991
+#define ATTRIBUTE_MOD 990
 
 #define RESERVED_WORD_DELIM "\t"
+
+#define SYM_TABLE_START_ADDR 2000
 
 typedef struct ReservedWord
 {
@@ -67,14 +71,22 @@ typedef struct ReservedWord
 	struct ReservedWord *next;
 } ReservedWord;
 
+typedef struct SymbolTable
+{
+	char *symbol;
+	struct SymbolTable *next;
+} SymbolTable;
+
 typedef struct MachineResult {
 	char *lexeme;
 	Token *token;
 	char *f;
 } MachineResult;
 
-MachineResult *get_next_token (char *line, ReservedWord *reserved_words);
+MachineResult *get_next_token (char *line, ReservedWord *reserved_words, SymbolTable *symbol_table);
 ReservedWord *tokenize_reserved_word_str (char *line);
 TokenType int_to_token_type (int id);
+char *token_type_to_str (TokenType type);
+char *attribute_to_str (int attr);
 
 #endif

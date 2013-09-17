@@ -1,6 +1,6 @@
 #include "machine.h"
 
-MachineResult machine_omega(char *in, ReservedWord *reserved_words)
+MachineResult machine_omega(char *in, ReservedWord *reserved_words, SymbolTable *symbol_table)
 {
 	/*
 	This machine is the super machine that ties all
@@ -21,7 +21,7 @@ MachineResult machine_omega(char *in, ReservedWord *reserved_words)
 	{
 		switch (i)
 		{
-		case 1: res = machine_idres(f, reserved_words); break;
+		case 1: res = machine_idres(f, reserved_words, symbol_table); break;
 		case 2: res = machine_longreal(f); break;
 		case 3: res = machine_real(f); break;
 		case 4: res = machine_int(f); break;
@@ -79,7 +79,7 @@ MachineResult machine_whitespace(char *in)
 	return res;
 }
 
-MachineResult machine_idres(char *in, ReservedWord *reserved_words)
+MachineResult machine_idres(char *in, ReservedWord *reserved_words, SymbolTable *symbol_table)
 {
 	char *f = in;
 	int s = 1;
@@ -125,7 +125,7 @@ MachineResult machine_idres(char *in, ReservedWord *reserved_words)
 					else
 					{
 						res.token->type = TOKEN_ID;
-						res.token->attribute = 0;
+						res.token->attribute = get_sym_table_addr(word, symbol_table, SYM_TABLE_START_ADDR);
 					}
 				}
 			}
@@ -462,6 +462,11 @@ MachineResult machine_catchall(char *in)
 				res.token->type = TOKEN_COMMA;
 				res.token->attribute = 0;
 			}
+			else if (*f == EOF)
+			{
+				res.token->type = TOKEN_EOF;
+				res.token->attribute = 0;
+			}
 			else if (*f == ':')	s = 2;
 			else if (*f == '>')		s = 3;
 			else if (*f == '<')	s = 4;
@@ -551,6 +556,7 @@ int is_plus_or_minus(char c)
 
 ReservedWord *is_reserved_word(char *word, ReservedWord *reserved_words)
 {
+	// traverse reserved words list
 	ReservedWord *curr = reserved_words;
 	while (curr != NULL)
 	{
@@ -567,3 +573,32 @@ int is_whitespace(char c)
 {
 	return c == '\n' || c == '\r' || c == '\t' || c == ' ';
 }
+
+int get_sym_table_addr(char *word, SymbolTable *symbol_table, int loc)
+{
+	// empty table
+	if (symbol_table->symbol == NULL)
+	{
+		symbol_table->symbol = malloc(sizeof(word));
+		strcpy(symbol_table->symbol, word);
+		return loc;
+	}
+	// symbol found
+	else if (strcmp(symbol_table->symbol, word) == 0)
+		return loc;
+	// end of non-empty table
+	else if (symbol_table->next == NULL)
+	{
+		SymbolTable *symbol = (SymbolTable *)malloc(sizeof(SymbolTable));
+		symbol->symbol = malloc(sizeof(word));
+		strcpy(symbol->symbol, word);
+		symbol->next = NULL;
+
+		symbol_table->next = symbol;
+
+		return loc + 1;
+	}
+	// try next entry
+	else return get_sym_table_addr(word, symbol_table->next, loc + 1);
+}
+

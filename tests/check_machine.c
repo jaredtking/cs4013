@@ -21,36 +21,53 @@ START_TEST (test_machine_idres)
 	// build a reserved word list
 	ReservedWord *reserved_words = tokenize_reserved_word_str ("program\t1000\t0");
 	ReservedWord *next = tokenize_reserved_word_str ("begin\t1007\t0");
-	ReservedWord *next2 = tokenize_reserved_word_str ("while\t1012\t0");
+	ReservedWord *next2 = tokenize_reserved_word_str ("while\t1013\t0");
 	reserved_words->next = next;
 	next->next = next2;
 
+	// symbol table
+	SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));	
+
 	// valid id
 	char *str = "isthisanid";
-	MachineResult res = machine_idres(str, reserved_words);
+	MachineResult res = machine_idres(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_ID);
-	ck_assert(res.token->attribute == 0);
+	ck_assert(res.token->attribute == SYM_TABLE_START_ADDR);
 	ck_assert(res.f == str + strlen(str));
 
 	// too long id
 	str = "thisidiswaytooooolong";
-	res = machine_idres(str, reserved_words);
+	res = machine_idres(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_LEXERR);
 	ck_assert(res.token->attribute == MACHINE_ERR_ID_TOO_LONG);
 	ck_assert(res.f == str + strlen(str));
 
 	// invalid id
 	str = "#*(*%(&not an id";
-	res = machine_idres(str, reserved_words);
+	res = machine_idres(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_LEXERR);
 	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
 
 	// check for reserved words
 	str = "while";
-	res = machine_idres(str, reserved_words);
+	res = machine_idres(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_WHILE);
 	ck_assert(res.token->attribute == 0);
 	ck_assert(res.f == str + strlen(str));
+
+	// check symbol table entries
+	str = "someid";
+	res = machine_idres(str, reserved_words, symbol_table);
+	ck_assert(res.token->type == TOKEN_ID);
+	ck_assert(res.token->attribute == SYM_TABLE_START_ADDR + 1);
+	ck_assert(res.f == str + strlen(str));
+
+	str = "isthisanid";
+	res = machine_idres(str, reserved_words, symbol_table);
+	ck_assert(res.token->type == TOKEN_ID);
+	ck_assert(res.token->attribute == SYM_TABLE_START_ADDR);
+	ck_assert(res.f == str + strlen(str));
+
 }
 END_TEST
 
@@ -340,13 +357,16 @@ START_TEST (test_machine_omega)
 	// build a reserved word list
 	ReservedWord *reserved_words = tokenize_reserved_word_str ("program\t1000\t0");
 	ReservedWord *next = tokenize_reserved_word_str ("begin\t1007\t0");
-	ReservedWord *next2 = tokenize_reserved_word_str ("while\t1012\t0");
+	ReservedWord *next2 = tokenize_reserved_word_str ("while\t1013\t0");
 	reserved_words->next = next;
 	next->next = next2;	
 
+	// symbol table
+	SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));	
+
 	// whitespace
 	char *str = "\n\n\n\n   \t\t\t\t\t";
-	MachineResult res = machine_omega(str, reserved_words);
+	MachineResult res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_WHITESPACE);
 	ck_assert(res.token->attribute == 0);
 	ck_assert(res.f == str + strlen(str));
@@ -354,15 +374,15 @@ START_TEST (test_machine_omega)
 
 	// id
 	str = "nahnahnah";
-	res = machine_omega(str, reserved_words);
+	res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_ID);
-	ck_assert(res.token->attribute == 0);
+	ck_assert(res.token->attribute == SYM_TABLE_START_ADDR);
 	ck_assert(res.f == str + strlen(str));
 	ck_assert(strcmp(res.lexeme, str) == 0);
 
 	// reserved word
 	str = "while";
-	res = machine_omega(str, reserved_words);
+	res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_WHILE);
 	ck_assert(res.token->attribute == 0);
 	ck_assert(res.f == str + strlen(str));
@@ -370,7 +390,7 @@ START_TEST (test_machine_omega)
 
 	// int
 	str = "123840";
-	res = machine_omega(str, reserved_words);
+	res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_INT);
 	ck_assert(res.f == str + strlen(str));
@@ -378,7 +398,7 @@ START_TEST (test_machine_omega)
 
 	// real
 	str = "23480.8334";
-	res = machine_omega(str, reserved_words);
+	res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_REAL);
 	ck_assert(res.f == str + strlen(str));
@@ -386,7 +406,7 @@ START_TEST (test_machine_omega)
 
 	// longreal
 	str = "23480.8334E-83";
-	res = machine_omega(str, reserved_words);
+	res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_NUM);
 	ck_assert(res.token->attribute == ATTRIBUTE_LONGREAL);
 	ck_assert(res.f == str + strlen(str));
@@ -394,7 +414,7 @@ START_TEST (test_machine_omega)
 
 	// catchall
 	str = "+";
-	res = machine_omega(str, reserved_words);
+	res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_ADDOP);
 	ck_assert(res.token->attribute == '+');
 	ck_assert(res.f == str + strlen(str));
@@ -402,7 +422,7 @@ START_TEST (test_machine_omega)
 
 	// no match
 	str = "&YDF(NSDFU9s*^(&)))";
-	res = machine_omega(str, reserved_words);
+	res = machine_omega(str, reserved_words, symbol_table);
 	ck_assert(res.token->type == TOKEN_LEXERR);
 	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
 	ck_assert(res.f == str + 1);

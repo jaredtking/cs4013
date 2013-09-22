@@ -127,6 +127,8 @@ int main(int argc, char **argv)
 	int eof = 0;
 
 	SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));
+	symbol_table->symbol = NULL;
+	symbol_table->next = NULL;
 
 	while (!eof)
 	{

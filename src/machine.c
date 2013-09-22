@@ -579,7 +579,7 @@ int get_sym_table_addr(char *word, SymbolTable *symbol_table, int loc)
 	// empty table
 	if (symbol_table->symbol == NULL)
 	{
-		symbol_table->symbol = malloc(sizeof(word));
+		symbol_table->symbol = (char *)malloc(strlen(word)+1*sizeof(char));
 		strcpy(symbol_table->symbol, word);
 		return loc;
 	}
@@ -590,7 +590,7 @@ int get_sym_table_addr(char *word, SymbolTable *symbol_table, int loc)
 	else if (symbol_table->next == NULL)
 	{
 		SymbolTable *symbol = (SymbolTable *)malloc(sizeof(SymbolTable));
-		symbol->symbol = malloc(sizeof(word));
+		symbol->symbol = (char *)malloc(strlen(word)+1*sizeof(char));
 		strcpy(symbol->symbol, word);
 		symbol->next = NULL;
 
@@ -599,6 +599,7 @@ int get_sym_table_addr(char *word, SymbolTable *symbol_table, int loc)
 		return loc + 1;
 	}
 	// try next entry
-	else return get_sym_table_addr(word, symbol_table->next, loc + 1);
+	else
+		return get_sym_table_addr(word, symbol_table->next, loc + 1);
 }
 

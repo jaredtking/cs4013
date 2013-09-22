@@ -27,6 +27,8 @@ START_TEST (test_machine_idres)
 
 	// symbol table
 	SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));	
+	symbol_table->symbol = NULL;
+	symbol_table->next = NULL;
 
 	// valid id
 	char *str = "isthisanid";
@@ -363,6 +365,8 @@ START_TEST (test_machine_omega)
 
 	// symbol table
 	SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));	
+	symbol_table->symbol = NULL;
+	symbol_table->next = NULL;
 
 	// whitespace
 	char *str = "\n\n\n\n   \t\t\t\t\t";

@@ -29,6 +29,8 @@ START_TEST (test_get_token)
 
 	// symbol table
 	SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));
+	symbol_table->symbol = NULL;
+	symbol_table->next = NULL;
 
 	char *str1 = "program   test #@";
 

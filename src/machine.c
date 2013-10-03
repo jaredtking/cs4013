@@ -233,9 +233,16 @@ MachineResult machine_real(char *in)
 			}
 		break;
 		case 3: // period
-			if (!is_numeric(*f)) s++;
+			if (is_numeric(*f))	s++;
+			else {
+				s = 0;
+				f--;
+			}
 		break;
-		case 4:
+		case 4: // digit
+			if (!is_numeric(*f))	s++;
+		break;
+		case 5:
 			f--;
 
 			// make sure the int is not too long
@@ -602,4 +609,3 @@ int get_sym_table_addr(char *word, SymbolTable *symbol_table, int loc)
 	else
 		return get_sym_table_addr(word, symbol_table->next, loc + 1);
 }
-

@@ -120,12 +120,11 @@ START_TEST (test_machine_real)
 	ck_assert(res.token->attribute == ATTRIBUTE_REAL);
 	ck_assert(res.f == str + strlen(str));
 
-	// valid real
+	// invalid real
 	str = "12345.";
 	res = machine_real(str);
-	ck_assert(res.token->type == TOKEN_NUM);
-	ck_assert(res.token->attribute == ATTRIBUTE_REAL);
-	ck_assert(res.f == str + strlen(str));
+	ck_assert(res.token->type == TOKEN_LEXERR);
+	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
 
 	// invalid real
 	str = "123408";
@@ -225,6 +224,32 @@ START_TEST (test_machine_longreal)
 	ck_assert(res.token->type == TOKEN_LEXERR);
 	ck_assert(res.token->attribute == MACHINE_ERR_NUM_LEADING_ZERO);
 	ck_assert(res.f == str + strlen(str));
+
+	// Shenoi tests
+	str = "3.E+";
+	res = machine_longreal(str);
+	ck_assert(res.token->type == TOKEN_LEXERR);
+	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
+
+	str = "3E+4";
+	res = machine_longreal(str);
+	ck_assert(res.token->type == TOKEN_LEXERR);
+	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
+
+	str = "3.4E+";
+	res = machine_longreal(str);
+	ck_assert(res.token->type == TOKEN_LEXERR);
+	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
+
+	str = "3E+";
+	res = machine_longreal(str);
+	ck_assert(res.token->type == TOKEN_LEXERR);
+	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
+
+	str = "3E4";
+	res = machine_longreal(str);
+	ck_assert(res.token->type == TOKEN_LEXERR);
+	ck_assert(res.token->attribute == MACHINE_ERR_NO_MATCH);
 }
 END_TEST
 

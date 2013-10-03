@@ -152,5 +152,3 @@ char *attribute_to_str (int attr)
 	snprintf(str, 1, "%d", attr);
 	return str;
 }
-
-
